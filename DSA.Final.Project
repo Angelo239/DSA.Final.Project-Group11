@@ -1,0 +1,141 @@
+# pip install emoji
+
+import tkinter as tk
+from tkinter import messagebox
+
+try:
+    import emoji
+except ImportError:
+    tk.Tk().withdraw()
+    messagebox.showerror("Error", "The 'emoji' library is not installed. Run 'pip install emoji' to install it.")
+    exit()
+
+
+class EmojiManagerApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Emoji Manager")
+        self.root.geometry("500x500")
+        self.root.configure(bg="#f0f8ff")  # Light blue background
+        self.emoji_dict = {
+            
+            "i": "🙋", "you": "👉", "he": "👦", "she": "👧", "it": "🐾", "we": "👫",
+    "they": "👥", "me": "🙋", "us": "👫", "them": "👥", "my": "🙋📦", "your": "👉📦",
+    "his": "👦📦", "her": "👧📦", "its": "🐾📦", "our": "👫📦", "their": "👥📦",
+    
+    # Common verbs
+    "am": "🟢", "is": "🟢", "are": "🟢", "was": "🔙🟢", "were": "🔙🟢", "be": "🧍",
+    "being": "🔄", "been": "📜", "do": "✅", "does": "✅", "did": "🔙✅",
+    "have": "📦", "has": "📦", "had": "🔙📦", "can": "💪", "could": "💪❓",
+    "will": "🔜", "would": "🤔", "shall": "📘", "should": "⚠️", "may": "🤞",
+    "might": "🤞❓", "must": "🔒", "go": "🏃", "make": "🛠️", "see": "👀",
+    "say": "🗣️", "think": "💭", "know": "🧠", "want": "💭", "need": "❗",
+
+    # Conjunctions
+    "and": "➕", "or": "🔀", "but": "⚠️", "because": "🎯", "so": "➡️",
+    "although": "🤷", "if": "❓", "then": "➡️", "when": "⏰", "while": "⏳",
+
+    # Prepositions
+    "in": "📦", "on": "⬆️", "at": "📍", "by": "👤➡️", "with": "🤝",
+    "about": "ℹ️", "for": "🎁", "from": "📤", "to": "➡️", "into": "📥",
+    "out": "📤", "over": "☝️", "under": "👇", "after": "⏭️", "before": "⏮️",
+    "through": "🚪", "between": "↔️", "against": "🚫", "without": "🚫🤝",
+
+    # Articles & Determiners
+    "the": "📍", "a": "1️⃣", "an": "1️⃣", "this": "👉", "that": "👉➡️",
+    "these": "👉👥", "those": "👉👥➡️", "each": "🔁", "every": "🌍", "some": "🔢",
+
+    # Adjectives
+    "big": "📏", "small": "📐", "good": "👍", "bad": "👎", "happy": "😊",
+    "sad": "😢", "fast": "💨", "slow": "🐢", "hot": "🔥", "cold": "❄️",
+    "new": "🆕", "old": "📜", "young": "👶", "beautiful": "😍", "strong": "💪",
+    "weak": "🪫", "easy": "😌", "hard": "💪🧠", "fun": "🎉", "boring": "🥱",
+
+    # Adverbs
+    "very": "📈", "really": "✔️", "quickly": "💨", "slowly": "🐢", "always": "🔁",
+    "never": "🚫", "sometimes": "🤷", "often": "🔁📆", "now": "🕐", "then": "📆",
+
+    # Interjections
+    "wow": "😲", "oh": "😮", "oops": "😅", "yay": "🎉", "uh": "🤔",
+    "ugh": "😫", "hmm": "🤔", "aha": "💡", "ouch": "😣", "hey": "👋",
+
+    # Others
+    "who": "❓👤", "what": "❓📦", "where": "❓📍", "when": "❓⏰", "why": "❓🎯",
+    "how": "❓⚙️", "yes": "👍", "no": "👎", "maybe": "🤷", "okay": "👌"
+}
+        self.create_widgets()
+
+    def create_widgets(self):
+        # Title Label
+        tk.Label(
+            self.root,
+            text="Emoji Manager",
+            font=("Helvetica", 18, "bold"),
+            bg="#f0f8ff",
+            fg="#333",
+        ).pack(pady=10)
+
+        # Buttons with styling
+        button_style = {"font": ("Helvetica", 12), "bg": "#add8e6", "fg": "#333", "relief": "raised"}
+        tk.Button(self.root, text="Convert Text to Emoji", command=self.convert_text_to_emoji, width=30, **button_style).pack(pady=5)
+        tk.Button(self.root, text="Translate Sentence to Emojis", command=self.translate_sentence_to_emojis, width=30, **button_style).pack(pady=5)
+        tk.Button(self.root, text="View Emoji Dictionary", command=self.view_emoji_dictionary, width=30, **button_style).pack(pady=5)
+        tk.Button(self.root, text="Exit", command=self.confirm_exit, width=30, **button_style).pack(pady=5)
+
+    def convert_text_to_emoji(self):
+        self.create_input_window("Convert Text to Emoji", "Enter the text (alias or keyword):", self.handle_text_to_emoji)
+
+    def translate_sentence_to_emojis(self):
+        self.create_input_window("Translate Sentence to Emojis", "Enter a sentence:", self.handle_sentence_to_emojis)
+
+    def view_emoji_dictionary(self):
+        dict_window = tk.Toplevel(self.root)
+        dict_window.title("Emoji Dictionary")
+        dict_window.geometry("400x400")
+        dict_window.configure(bg="#f0f8ff")
+        scrollbar = tk.Scrollbar(dict_window)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        text_area = tk.Text(dict_window, wrap=tk.WORD, yscrollcommand=scrollbar.set, bg="#ffffff", fg="#333", font=("Helvetica", 12))
+        text_area.pack(expand=True, fill=tk.BOTH)
+        for word, emoji_char in self.emoji_dict.items():
+            text_area.insert(tk.END, f"{word}: {emoji_char}\n")
+        text_area.config(state=tk.DISABLED)
+        scrollbar.config(command=text_area.yview)
+
+    def create_input_window(self, title, label_text, submit_action):
+        input_window = tk.Toplevel(self.root)
+        input_window.title(title)
+        input_window.geometry("400x200")
+        input_window.configure(bg="#f0f8ff")
+        tk.Label(input_window, text=label_text, font=("Helvetica", 12), bg="#f0f8ff", fg="#333").pack(pady=10)
+        text_input = tk.Entry(input_window, width=50, font=("Helvetica", 12))
+        text_input.pack(pady=10)
+        tk.Button(input_window, text="Submit", command=lambda: submit_action(text_input.get(), input_window), font=("Helvetica", 12), bg="#add8e6", fg="#333").pack(pady=10)
+
+    def handle_text_to_emoji(self, text, window):
+        text = text.strip()
+        try:
+            emoji_result = emoji.emojize(text, language='alias')
+            if emoji_result != text:
+                messagebox.showinfo("Result", f"{text}: {emoji_result}")
+            else:
+                messagebox.showwarning("Not Found", f"No emoji found for '{text}'.")
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {e}")
+        window.destroy()
+
+    def handle_sentence_to_emojis(self, sentence, window):
+        sentence = sentence.strip()
+        translated_sentence = " ".join([self.emoji_dict.get(word.lower(), word) for word in sentence.split()])
+        messagebox.showinfo("Translation", f"Translated Sentence: {translated_sentence}")
+        window.destroy()
+
+    def confirm_exit(self):
+        if messagebox.askyesno("Exit", "Are you sure you want to exit?"):
+            self.root.destroy()
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = EmojiManagerApp(root)
+    root.mainloop()
